@@ -1,0 +1,237 @@
+# This is the OpenAPI specification for your service. It is used to generate the client code.
+# To generate the server code, use the Gradle task `openApiGenerate`. The
+# generated code will be placed in `build/generate-resources/main`.
+#
+# We will evaluate you based on how well you design your API.
+# 1. How well it follows REST principles.
+# 2. How easy it is to understand and use.
+#
+# References
+# 1. https://swagger.io/specification/
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: User Service
+  license:
+    name: MIT
+servers:
+  - url: http://localhost
+tags:
+  - name: hello
+    description: Just a test endpoint
+  - name: estate
+    description: Estate management
+paths:
+  /hello:
+    get:
+      summary: This is just a test endpoint to get you started.
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Test return
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      tags:
+        - hello
+  /estate:
+    post:
+      summary: Create a new estate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                width:
+                  type: number
+                  example: 10
+                length:
+                  type: number
+                  example: 20
+      responses:
+        "201":
+          description: Estate created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateEstateResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      tags:
+        - estate
+  /estate/{id}/tree:
+    post:
+      summary: Store a tree in an estate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                x:
+                  type: number
+                  example: 5
+                y:
+                  type: number
+                  example: 10
+                height:
+                  type: number
+                  example: 2
+      responses:
+        "201":
+          description: Tree planted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateTreeResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      tags:
+        - estate
+  /estate/{id}/stats:
+    get:
+      summary: Stat of the tree in an estate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Tree planted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetTreeStatResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorResponse"
+      tags:
+        - estate
+  /estate/{id}/drone-plan:
+    get:
+      summary: Get sum distance of the drone monitoring in the estate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Sum distance of the drone monitoring in the estate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetDronePlaneResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorResponse"
+      tags:
+        - estate
+components:
+  schemas:
+    GetDronePlaneResponse:
+      type: object
+      required:
+        - distance
+      properties:
+        distance:
+          type: number
+          example: 10
+    GetTreeStatResponse:
+      type: object
+      required:
+        - count
+        - max
+        - min
+        - median
+      properties:
+        count:
+          type: integer
+          example: 10
+        max:
+          type: number
+          example: 10
+        min:
+          type: number
+          example: 1
+        median:
+          type: number
+          example: 5
+    CreateTreeResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+    CreateEstateResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+    HelloResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Hello, World!
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    NotFoundErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
