@@ -8,4 +8,8 @@ import "context"
 
 type RepositoryInterface interface {
 	GetTestById(ctx context.Context, input GetTestByIdInput) (output GetTestByIdOutput, err error)
+
+	CreateEstate(ctx context.Context, input CreateEstateInput) error
+	GetEstateById(ctx context.Context, input GetEstateByIdInput) (output GetEstateByIdOutput, err error)
+	CreateTree(ctx context.Context, input CreateTreeInput) error
 }

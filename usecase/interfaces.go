@@ -1,0 +1,13 @@
+package usecase
+
+import (
+	"context"
+
+	"github.com/SawitProRecruitment/UserService/generated"
+	"github.com/google/uuid"
+)
+
+type EstateUsecase interface {
+	CreateEstate(ctx context.Context, req generated.PostEstateJSONRequestBody) (resp generated.CreateEstateResponse, err error)
+	CreateTree(ctx context.Context, id uuid.UUID, req generated.PostEstateIdTreeJSONRequestBody) (resp generated.CreateTreeResponse, err error)
+}

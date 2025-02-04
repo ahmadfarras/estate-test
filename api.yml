@@ -17,35 +17,9 @@ info:
 servers:
   - url: http://localhost
 tags:
-  - name: hello
-    description: Just a test endpoint
   - name: estate
     description: Estate management
 paths:
-  /hello:
-    get:
-      summary: This is just a test endpoint to get you started.
-      parameters:
-        - name: id
-          in: query
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: Test return
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/HelloResponse"
-        "404":
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-      tags:
-        - hello
   /estate:
     post:
       summary: Create a new estate
@@ -55,12 +29,15 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - width
+                - length
               properties:
                 width:
-                  type: number
+                  type: integer
                   example: 10
                 length:
-                  type: number
+                  type: integer
                   example: 20
       responses:
         "201":
@@ -85,22 +62,27 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - x
+                - y
+                - height
               properties:
                 x:
-                  type: number
+                  type: integer
                   example: 5
                 y:
-                  type: number
+                  type: integer
                   example: 10
                 height:
-                  type: number
+                  type: integer
                   example: 2
       responses:
         "201":
@@ -213,14 +195,6 @@ components:
         id:
           type: string
           format: uuid
-    HelloResponse:
-      type: object
-      required:
-        - message
-      properties:
-        message:
-          type: string
-          example: Hello, World!
     ErrorResponse:
       type: object
       required:
