@@ -20,6 +20,28 @@ tags:
   - name: estate
     description: Estate management
 paths:
+  /hello:
+    get:
+      summary: This is just a test endpoint to get you started.
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Test return
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelloResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /estate:
     post:
       summary: Create a new estate
@@ -151,6 +173,14 @@ paths:
         - estate
 components:
   schemas:
+    HelloResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Hello, World!
     GetDronePlaneResponse:
       type: object
       required:
