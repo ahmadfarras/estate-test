@@ -3,10 +3,17 @@ package error
 import (
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
 func ErrorHandler(ctx echo.Context, err error) error {
+
+	if _, ok := err.(validator.ValidationErrors); ok {
+		return ctx.JSON(http.StatusBadRequest,
+			map[string]string{"error": err.Error()})
+	}
+
 	switch err {
 	case ErrEstateNotFound:
 		return ctx.JSON(http.StatusNotFound,

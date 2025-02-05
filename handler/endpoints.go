@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/SawitProRecruitment/UserService/generated"
+	"github.com/SawitProRecruitment/UserService/model/request"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
@@ -56,7 +57,13 @@ func (s *Server) PostEstate(ctx echo.Context) error {
 		return apiError.ErrorHandler(ctx, err)
 	}
 
-	resp, err := s.EstateUsecase.CreateEstate(context, req)
+	err := request.ValidateCreateEstate(req, s.Validator)
+	if err != nil {
+		logrus.WithContext(context).WithError(err).Error("failed to validate request")
+		return apiError.ErrorHandler(ctx, err)
+	}
+
+	resp, err = s.EstateUsecase.CreateEstate(context, req)
 	if err != nil {
 		logrus.WithContext(context).WithError(err).Error("failed to create estate")
 		return apiError.ErrorHandler(ctx, err)
@@ -78,7 +85,13 @@ func (s *Server) PostEstateIdTree(ctx echo.Context, id uuid.UUID) error {
 		return apiError.ErrorHandler(ctx, err)
 	}
 
-	resp, err := s.EstateUsecase.CreateTree(context, id, req)
+	err := request.ValidateCreateTree(req, s.Validator)
+	if err != nil {
+		logrus.WithContext(context).WithError(err).Error("failed to validate request")
+		return apiError.ErrorHandler(ctx, err)
+	}
+
+	resp, err = s.EstateUsecase.CreateTree(context, id, req)
 	if err != nil {
 		logrus.WithContext(context).WithError(err).Error("failed to create tree")
 		return apiError.ErrorHandler(ctx, err)

@@ -1,23 +1,23 @@
 package handler
 
 import (
-	"github.com/SawitProRecruitment/UserService/repository"
 	"github.com/SawitProRecruitment/UserService/usecase"
+	"github.com/go-playground/validator/v10"
 )
 
 type Server struct {
 	EstateUsecase usecase.EstateUsecase
-	Repository    repository.RepositoryInterface
+	Validator     *validator.Validate
 }
 
 type NewServerOptions struct {
 	EstateUsecase usecase.EstateUsecase
-	Repository    repository.RepositoryInterface
+	Validator     *validator.Validate
 }
 
 func NewServer(opts NewServerOptions) *Server {
 	return &Server{
 		opts.EstateUsecase,
-		opts.Repository,
+		opts.Validator,
 	}
 }

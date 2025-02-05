@@ -7,6 +7,7 @@ import (
 	"github.com/SawitProRecruitment/UserService/handler"
 	"github.com/SawitProRecruitment/UserService/repository"
 	"github.com/SawitProRecruitment/UserService/usecase"
+	"github.com/go-playground/validator/v10"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -32,8 +33,8 @@ func newServer() *handler.Server {
 		estateUsecase = usecase.NewEstateUsecase(repo)
 	)
 	opts := handler.NewServerOptions{
-		Repository:    repo,
 		EstateUsecase: estateUsecase,
+		Validator:     validator.New(),
 	}
 
 	return handler.NewServer(opts)
