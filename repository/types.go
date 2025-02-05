@@ -2,8 +2,6 @@
 package repository
 
 import (
-	"time"
-
 	"github.com/SawitProRecruitment/UserService/model"
 	"github.com/google/uuid"
 )
@@ -27,11 +25,7 @@ type GetEstateByIdInput struct {
 }
 
 type GetEstateByIdOutput struct {
-	ID        uuid.UUID
-	Length    int
-	Width     int
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	model.Estate
 }
 
 type CreateTreeInput struct {
