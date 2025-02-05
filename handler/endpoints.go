@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
+
+	apiError "github.com/SawitProRecruitment/UserService/error"
 )
 
 // GetEstateIdDronePlan implements generated.ServerInterface.
@@ -19,7 +21,7 @@ func (s *Server) GetEstateIdDronePlan(ctx echo.Context, id uuid.UUID) error {
 	resp, err := s.EstateUsecase.CalculateTravelDistance(context, id)
 	if err != nil {
 		logrus.WithContext(context).WithError(err).Error("failed to get estate stats")
-		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
+		return apiError.ErrorHandler(ctx, err)
 	}
 
 	return ctx.JSON(http.StatusOK, resp)
@@ -35,7 +37,7 @@ func (s *Server) GetEstateIdStats(ctx echo.Context, id uuid.UUID) error {
 	resp, err := s.EstateUsecase.GetEstateStats(context, id)
 	if err != nil {
 		logrus.WithContext(context).WithError(err).Error("failed to get estate stats")
-		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
+		return apiError.ErrorHandler(ctx, err)
 	}
 
 	return ctx.JSON(http.StatusOK, resp)
@@ -51,13 +53,13 @@ func (s *Server) PostEstate(ctx echo.Context) error {
 
 	if err := ctx.Bind(&req); err != nil {
 		logrus.WithContext(context).WithError(err).Error("failed to bind request")
-		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid Request"})
+		return apiError.ErrorHandler(ctx, err)
 	}
 
 	resp, err := s.EstateUsecase.CreateEstate(context, req)
 	if err != nil {
 		logrus.WithContext(context).WithError(err).Error("failed to create estate")
-		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
+		return apiError.ErrorHandler(ctx, err)
 	}
 
 	return ctx.JSON(http.StatusOK, resp)
@@ -73,13 +75,13 @@ func (s *Server) PostEstateIdTree(ctx echo.Context, id uuid.UUID) error {
 
 	if err := ctx.Bind(&req); err != nil {
 		logrus.WithContext(context).WithError(err).Error("failed to bind request")
-		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid Request"})
+		return apiError.ErrorHandler(ctx, err)
 	}
 
 	resp, err := s.EstateUsecase.CreateTree(context, id, req)
 	if err != nil {
 		logrus.WithContext(context).WithError(err).Error("failed to create tree")
-		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
+		return apiError.ErrorHandler(ctx, err)
 	}
 
 	return ctx.JSON(http.StatusOK, resp)
