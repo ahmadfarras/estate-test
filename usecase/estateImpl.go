@@ -2,10 +2,13 @@ package usecase
 
 import (
 	"context"
+	"math"
 	"sort"
+	"strconv"
 
 	globalError "github.com/SawitProRecruitment/UserService/error"
 	"github.com/SawitProRecruitment/UserService/generated"
+	"github.com/SawitProRecruitment/UserService/model"
 	"github.com/SawitProRecruitment/UserService/repository"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -160,17 +163,60 @@ func (e *EstateUsecaseImpl) CalculateTravelDistance(ctx context.Context, id uuid
 		return generated.GetDronePlaneResponse{}, err
 	}
 
-	var totalTreeHeight int
-	for _, tree := range estateTrees.Trees {
-		totalTreeHeight += tree.Height
-	}
+	treeMap := mappingTreeByItsCoordinate(estateTrees.Trees)
 
-	estateArea := estate.Length * estate.Width
-	totalDistance := totalTreeHeight + 2 + ((estateArea - 1) * 10)
+	totalDistance := processCalculateTotalDistance(estate.Estate, treeMap)
 
 	resp = generated.GetDronePlaneResponse{
 		Distance: float32(totalDistance),
 	}
 
 	return resp, nil
+}
+
+func mappingTreeByItsCoordinate(trees []model.Tree) map[string]model.Tree {
+	treeMap := make(map[string]model.Tree)
+	for _, tree := range trees {
+		key := strconv.Itoa(tree.X) + "," + strconv.Itoa(tree.Y)
+		treeMap[key] = tree
+	}
+	return treeMap
+}
+
+func getTreeByCoordinates(x, y int, treeMap map[string]model.Tree) (*model.Tree, bool) {
+	key := strconv.Itoa(x) + "," + strconv.Itoa(y)
+	tree, exists := treeMap[key]
+	if !exists {
+		return nil, false
+	}
+	return &tree, true
+}
+
+func processCalculateTotalDistance(estate model.Estate, treeMap map[string]model.Tree) int {
+	totalDistance := 2
+	previousTreeHeight := 0
+	estateArea := estate.Length * estate.Width
+	for i := 1; i <= estateArea; i++ {
+		if i != estateArea {
+			totalDistance += 10
+		}
+
+		var c int
+		x := i / estate.Width
+		if x%estate.Width == 0 {
+			c = i % estate.Width
+		} else {
+			c = estate.Width - 1 - (i % estate.Width)
+		}
+		y := c + 1
+		tree, exists := getTreeByCoordinates(x, y, treeMap)
+		if exists {
+			totalDistance += int(math.Abs(float64(tree.Height) - float64(previousTreeHeight)))
+			previousTreeHeight = tree.Height
+		} else {
+			totalDistance += previousTreeHeight
+			previousTreeHeight = 0
+		}
+	}
+	return totalDistance
 }
