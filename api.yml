@@ -115,7 +115,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetTreeStatResponse"
+                $ref: "#/components/schemas/GetEstateStatResponse"
         "404":
           description: Not found
           content:
@@ -159,7 +159,7 @@ components:
         distance:
           type: number
           example: 10
-    GetTreeStatResponse:
+    GetEstateStatResponse:
       type: object
       required:
         - count
@@ -171,10 +171,10 @@ components:
           type: integer
           example: 10
         max:
-          type: number
+          type: integer
           example: 10
         min:
-          type: number
+          type: integer
           example: 1
         median:
           type: number

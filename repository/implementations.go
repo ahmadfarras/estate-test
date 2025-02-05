@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 
+	"github.com/SawitProRecruitment/UserService/model"
 	"github.com/sirupsen/logrus"
 )
 
@@ -40,4 +41,26 @@ func (r *Repository) CreateTree(ctx context.Context, input CreateTreeInput) erro
 		return err
 	}
 	return nil
+}
+
+func (r *Repository) GetAllTreesByEstateID(ctx context.Context, input GetAllTreesByEstateIDInput) (output GetAllTreesByEstateIDOutput, err error) {
+	rows, err := r.Db.QueryContext(ctx, "SELECT id, estate_id, height, x, y FROM tree WHERE estate_id = $1", input.EstateID)
+	if err != nil {
+		logrus.WithContext(ctx).WithError(err).Error("failed to get all trees by estate id")
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var tree model.Tree
+		err = rows.Scan(&tree.ID, &tree.EstateID, &tree.Height, &tree.X, &tree.Y)
+		if err != nil {
+			logrus.WithContext(ctx).WithError(err).Error("failed to scan tree")
+			return
+		}
+		output.Trees = append(output.Trees, tree)
+	}
+
+	output.Total = len(output.Trees)
+	return
 }

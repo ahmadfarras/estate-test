@@ -12,4 +12,5 @@ type RepositoryInterface interface {
 	CreateEstate(ctx context.Context, input CreateEstateInput) error
 	GetEstateById(ctx context.Context, input GetEstateByIdInput) (output GetEstateByIdOutput, err error)
 	CreateTree(ctx context.Context, input CreateTreeInput) error
+	GetAllTreesByEstateID(ctx context.Context, input GetAllTreesByEstateIDInput) (output GetAllTreesByEstateIDOutput, err error)
 }

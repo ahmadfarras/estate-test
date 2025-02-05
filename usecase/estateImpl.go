@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"sort"
 
 	"github.com/SawitProRecruitment/UserService/generated"
 	"github.com/SawitProRecruitment/UserService/repository"
@@ -10,8 +11,7 @@ import (
 )
 
 // CreateEstate implements EstateUsecase.
-func (e *EstateUsecaseImpl) CreateEstate(
-	ctx context.Context, req generated.PostEstateJSONRequestBody,
+func (e *EstateUsecaseImpl) CreateEstate(ctx context.Context, req generated.PostEstateJSONRequestBody,
 ) (resp generated.CreateEstateResponse, err error) {
 	estateInput := repository.CreateEstateInput{
 		ID:     uuid.New(),
@@ -33,8 +33,7 @@ func (e *EstateUsecaseImpl) CreateEstate(
 }
 
 // CreateTree implements EstateUsecase.
-func (e *EstateUsecaseImpl) CreateTree(
-	ctx context.Context, id uuid.UUID, req generated.PostEstateIdTreeJSONRequestBody,
+func (e *EstateUsecaseImpl) CreateTree(ctx context.Context, id uuid.UUID, req generated.PostEstateIdTreeJSONRequestBody,
 ) (resp generated.CreateTreeResponse, err error) {
 	estate, err := e.Repository.GetEstateById(ctx, repository.GetEstateByIdInput{ID: id})
 	if err != nil {
@@ -61,4 +60,46 @@ func (e *EstateUsecaseImpl) CreateTree(
 	}
 
 	return resp, nil
+}
+
+// GetEstateStats implements EstateUsecase.
+func (e *EstateUsecaseImpl) GetEstateStats(ctx context.Context, id uuid.UUID,
+) (resp generated.GetEstateStatResponse, err error) {
+	estateTrees, err := e.Repository.GetAllTreesByEstateID(ctx, repository.GetAllTreesByEstateIDInput{EstateID: id})
+	if err != nil {
+		logrus.WithContext(ctx).WithError(err).Error("failed to get all trees by estate id")
+		return generated.GetEstateStatResponse{}, err
+	}
+
+	if estateTrees.Total == 0 {
+		return generated.GetEstateStatResponse{}, nil
+	}
+
+	var (
+		medianHeight float32
+	)
+
+	sort.Slice(estateTrees.Trees, func(i, j int) bool {
+		return estateTrees.Trees[i].Height < estateTrees.Trees[j].Height
+	})
+
+	maxHeight := estateTrees.Trees[len(estateTrees.Trees)-1].Height
+	minHeight := estateTrees.Trees[0].Height
+	totalCountOfTrees := estateTrees.Total
+
+	if totalCountOfTrees%2 == 0 {
+		medianHeight = float32(estateTrees.Trees[totalCountOfTrees/2-1].Height+estateTrees.Trees[totalCountOfTrees/2].Height) / 2
+	} else {
+		medianHeight = float32(estateTrees.Trees[totalCountOfTrees/2].Height)
+	}
+
+	resp = generated.GetEstateStatResponse{
+		Count:  totalCountOfTrees,
+		Max:    maxHeight,
+		Min:    minHeight,
+		Median: medianHeight,
+	}
+
+	return resp, nil
+
 }

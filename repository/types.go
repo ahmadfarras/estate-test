@@ -4,6 +4,7 @@ package repository
 import (
 	"time"
 
+	"github.com/SawitProRecruitment/UserService/model"
 	"github.com/google/uuid"
 )
 
@@ -39,4 +40,13 @@ type CreateTreeInput struct {
 	Height   int
 	X        int
 	Y        int
+}
+
+type GetAllTreesByEstateIDInput struct {
+	EstateID uuid.UUID
+}
+
+type GetAllTreesByEstateIDOutput struct {
+	Trees []model.Tree
+	Total int
 }
