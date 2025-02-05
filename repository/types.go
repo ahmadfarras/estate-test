@@ -50,3 +50,13 @@ type GetAllTreesByEstateIDOutput struct {
 	Trees []model.Tree
 	Total int
 }
+
+type GetTreeByEstateIDAndCoordinateInput struct {
+	EstateID uuid.UUID
+	X        int
+	Y        int
+}
+
+type GetTreeByEstateIDAndCoordinateOutput struct {
+	Tree model.Tree
+}

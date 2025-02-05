@@ -11,7 +11,18 @@ import (
 
 // GetEstateIdDronePlan implements generated.ServerInterface.
 func (s *Server) GetEstateIdDronePlan(ctx echo.Context, id uuid.UUID) error {
-	panic("unimplemented")
+	var (
+		resp    generated.GetDronePlaneResponse
+		context = ctx.Request().Context()
+	)
+
+	resp, err := s.EstateUsecase.CalculateTravelDistance(context, id)
+	if err != nil {
+		logrus.WithContext(context).WithError(err).Error("failed to get estate stats")
+		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
+	}
+
+	return ctx.JSON(http.StatusOK, resp)
 }
 
 // GetEstateIdStats implements generated.ServerInterface.

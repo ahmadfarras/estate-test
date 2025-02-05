@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/SawitProRecruitment/UserService/model"
 	"github.com/sirupsen/logrus"
@@ -24,14 +25,18 @@ func (r *Repository) CreateEstate(ctx context.Context, input CreateEstateInput) 
 	return nil
 }
 
-func (r *Repository) GetEstateById(ctx context.Context, input GetEstateByIdInput) (output GetEstateByIdOutput, err error) {
+func (r *Repository) GetEstateById(ctx context.Context, input GetEstateByIdInput) (output *GetEstateByIdOutput, err error) {
+	output = &GetEstateByIdOutput{}
 	err = r.Db.QueryRowContext(ctx, "SELECT id, length, width, created_at, updated_at FROM estate WHERE id = $1", input.ID).
 		Scan(&output.ID, &output.Length, &output.Width, &output.CreatedAt, &output.UpdatedAt)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		logrus.WithContext(ctx).WithError(err).Error("failed to get estate by id")
-		return
+		return nil, err
 	}
-	return
+	return output, nil
 }
 
 func (r *Repository) CreateTree(ctx context.Context, input CreateTreeInput) error {
@@ -63,4 +68,20 @@ func (r *Repository) GetAllTreesByEstateID(ctx context.Context, input GetAllTree
 
 	output.Total = len(output.Trees)
 	return
+}
+
+func (r *Repository) GetTreeByEstateIDAndCoordinate(ctx context.Context, input GetTreeByEstateIDAndCoordinateInput,
+) (output *GetTreeByEstateIDAndCoordinateOutput, err error) {
+	output = &GetTreeByEstateIDAndCoordinateOutput{}
+	err = r.Db.QueryRowContext(ctx, "SELECT id, estate_id, height, x, y FROM tree WHERE estate_id = $1 AND x = $2 AND y = $3", input.EstateID, input.X, input.Y).
+		Scan(&output.Tree.ID, &output.Tree.EstateID, &output.Tree.Height, &output.Tree.X, &output.Tree.Y)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		logrus.WithContext(ctx).WithError(err).Error("failed to get tree by estate id and coordinate")
+		return nil, err
+	}
+
+	return output, nil
 }
