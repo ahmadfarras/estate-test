@@ -1,4 +1,4 @@
-package request
+package helper
 
 import (
 	"github.com/SawitProRecruitment/UserService/generated"
@@ -10,7 +10,7 @@ type CreateEstate struct {
 	Width  int `json:"width" validate:"required,numeric,min=1,max=50000"`
 }
 
-func ValidateCreateEstate(req generated.PostEstateJSONRequestBody, validator *validator.Validate) error {
+func ValidateCreateEstateRequest(req generated.PostEstateJSONRequestBody, validator *validator.Validate) error {
 	createEstate := CreateEstate{
 		Length: req.Length,
 		Width:  req.Width,
@@ -25,7 +25,7 @@ type CreateTree struct {
 	Y      int `json:"y" validate:"required,numeric,min=1"`
 }
 
-func ValidateCreateTree(req generated.PostEstateIdTreeJSONRequestBody, validator *validator.Validate) error {
+func ValidateCreateTreeRequest(req generated.PostEstateIdTreeJSONRequestBody, validator *validator.Validate) error {
 	createEstate := CreateTree{
 		Height: req.Height,
 		X:      req.X,
